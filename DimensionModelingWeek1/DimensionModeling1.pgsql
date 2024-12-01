@@ -39,53 +39,53 @@ WITH yesterday AS(
 		WHERE season = 2021
 	)
 -- coalesce non-temporal column/dimensions(colums that doesn't change)
--- INSERT INTO players
--- SELECT
--- 	COALESCE(t.player_name,y.player_name)  player_name,
--- 	COALESCE(t.height,y.height) height,
--- 	COALESCE(t.college,y.college) college,
--- 	COALESCE(t.country,y.country) country,
--- 	COALESCE(t.draft_year,y.draft_year) draft_year,
--- 	COALESCE(t.draft_round,y.draft_round) draft_round,
--- 	COALESCE(t.draft_number,y.draft_number) draft_number,
--- 	CASE                                                 -- this 
--- 		WHEN y.seasons IS NULL
--- 		THEN ARRAY[ROW(
--- 			t.season,
--- 			t.gp,
--- 			t.pts,
--- 			t.reb,
--- 			t.ast
--- 		) :: season_stats]
--- 		WHEN t.season IS NOT NULL THEN y.seasons || ARRAY[ROW(
--- 			t.season,
--- 			t.gp,
--- 			t.pts,
--- 			t.reb,
--- 			t.ast
--- 		) :: season_stats]
--- 		ElSE y.seasons
--- 	END seasons,
--- 	CASE 
--- 		WHEN t.season IS NOT NULL THEN
--- 			CASE 
--- 				WHEN t.pts>20 THEN 'star'
--- 				WHEN t.pts>15 THEN 'good'
--- 				WHEN t.pts>10 THEN 'average'
--- 				ELSE 'bad'
--- 			END :: scoring_class
--- 		ELSE
--- 			y.scorer_class
--- 	END scorer_class,
--- 	CASE 
--- 		WHEN t.season IS NOT NULL THEN 0
--- 		ELSE COALESCE(y.years_since_last_active,0)+1
--- 	END years_since_last_active,
--- 	t.season IS NOT NULL as is_active,
--- 	COALESCE(t.season,y.current_season+1) current_season
--- FROM today t
--- FULL OUTER JOIN yesterday y
--- ON t.player_name=y.player_name;
+INSERT INTO players
+SELECT
+	COALESCE(t.player_name,y.player_name)  player_name,
+	COALESCE(t.height,y.height) height,
+	COALESCE(t.college,y.college) college,
+	COALESCE(t.country,y.country) country,
+	COALESCE(t.draft_year,y.draft_year) draft_year,
+	COALESCE(t.draft_round,y.draft_round) draft_round,
+	COALESCE(t.draft_number,y.draft_number) draft_number,
+	CASE                                                 -- this 
+		WHEN y.seasons IS NULL
+		THEN ARRAY[ROW(
+			t.season,
+			t.gp,
+			t.pts,
+			t.reb,
+			t.ast
+		) :: season_stats]
+		WHEN t.season IS NOT NULL THEN y.seasons || ARRAY[ROW(
+			t.season,
+			t.gp,
+			t.pts,
+			t.reb,
+			t.ast
+		) :: season_stats]
+		ElSE y.seasons
+	END seasons,
+	CASE 
+		WHEN t.season IS NOT NULL THEN
+			CASE 
+				WHEN t.pts>20 THEN 'star'
+				WHEN t.pts>15 THEN 'good'
+				WHEN t.pts>10 THEN 'average'
+				ELSE 'bad'
+			END :: scoring_class
+		ELSE
+			y.scorer_class
+	END scorer_class,
+	CASE 
+		WHEN t.season IS NOT NULL THEN 0
+		ELSE COALESCE(y.years_since_last_active,0)+1
+	END years_since_last_active,
+	t.season IS NOT NULL as is_active,
+	COALESCE(t.season,y.current_season+1) current_season
+FROM today t
+FULL OUTER JOIN yesterday y
+ON t.player_name=y.player_name;
 -- SELECT * FROM players where  player_name = 'Aaron McKie';
 
 INSERT INTO players
